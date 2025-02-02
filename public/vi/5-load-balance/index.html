@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="vi" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.69.0" />
+    <meta name="description" content="">
+<meta name="author" content="journeyoftheaverageguy@gmail.com">
+
+    <link rel="icon" href="/images/favicon.png" type="image/png">
+
+    <title>Khởi tạo Load Balancer :: Triển khai Ứng dụng ShareNote với Auto Scaling Group</title>
+
+    
+    <link href="/css/nucleus.css?1631799169" rel="stylesheet">
+    <link href="/css/fontawesome-all.min.css?1631799169" rel="stylesheet">
+    <link href="/css/hybrid.css?1631799169" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1631799169" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1631799169" rel="stylesheet">
+    <link href="/css/auto-complete.css?1631799169" rel="stylesheet">
+    <link href="/css/atom-one-dark-reasonable.css?1631799169" rel="stylesheet">
+    <link href="/css/theme.css?1631799169" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1631799169" rel="stylesheet">
+    
+    <link href="/css/theme-workshop.css?1631799169" rel="stylesheet">
+    
+    
+
+    <script src="/js/jquery-3.3.1.min.js?1631799169"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/vi/5-load-balance/">
+    <nav id="sidebar" class="showVisitedLinks">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="/">
+
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="30%"><defs><style>.cls-1{fill:#fff;}.cls-2{fill:#f90;fill-rule:evenodd;}</style></defs><title>AWS-Logo_White-Color</title><path class="cls-1" d="M14.09,10.85a4.7,4.7,0,0,0,.19,1.48,7.73,7.73,0,0,0,.54,1.19.77.77,0,0,1,.12.38.64.64,0,0,1-.32.49l-1,.7a.83.83,0,0,1-.44.15.69.69,0,0,1-.49-.23,3.8,3.8,0,0,1-.6-.77q-.25-.42-.51-1a6.14,6.14,0,0,1-4.89,2.3,4.54,4.54,0,0,1-3.32-1.19,4.27,4.27,0,0,1-1.22-3.2A4.28,4.28,0,0,1,3.61,7.75,6.06,6.06,0,0,1,7.69,6.46a12.47,12.47,0,0,1,1.76.13q.92.13,1.91.36V5.73a3.65,3.65,0,0,0-.79-2.66A3.81,3.81,0,0,0,7.86,2.3a7.71,7.71,0,0,0-1.79.22,12.78,12.78,0,0,0-1.79.57,4.55,4.55,0,0,1-.58.22l-.26,0q-.35,0-.35-.52V2a1.09,1.09,0,0,1,.12-.58,1.2,1.2,0,0,1,.47-.35A10.88,10.88,0,0,1,5.77.32,10.19,10.19,0,0,1,8.36,0a6,6,0,0,1,4.35,1.35,5.49,5.49,0,0,1,1.38,4.09ZM7.34,13.38a5.36,5.36,0,0,0,1.72-.31A3.63,3.63,0,0,0,10.63,12,2.62,2.62,0,0,0,11.19,11a5.63,5.63,0,0,0,.16-1.44v-.7a14.35,14.35,0,0,0-1.53-.28,12.37,12.37,0,0,0-1.56-.1,3.84,3.84,0,0,0-2.47.67A2.34,2.34,0,0,0,5,11a2.35,2.35,0,0,0,.61,1.76A2.4,2.4,0,0,0,7.34,13.38Zm13.35,1.8a1,1,0,0,1-.64-.16,1.3,1.3,0,0,1-.35-.65L15.81,1.51a3,3,0,0,1-.15-.67.36.36,0,0,1,.41-.41H17.7a1,1,0,0,1,.65.16,1.4,1.4,0,0,1,.33.65l2.79,11,2.59-11A1.17,1.17,0,0,1,24.39.6a1.1,1.1,0,0,1,.67-.16H26.4a1.1,1.1,0,0,1,.67.16,1.17,1.17,0,0,1,.32.65L30,12.39,32.88,1.25A1.39,1.39,0,0,1,33.22.6a1,1,0,0,1,.65-.16h1.54a.36.36,0,0,1,.41.41,1.36,1.36,0,0,1,0,.26,3.64,3.64,0,0,1-.12.41l-4,12.86a1.3,1.3,0,0,1-.35.65,1,1,0,0,1-.64.16H29.25a1,1,0,0,1-.67-.17,1.26,1.26,0,0,1-.32-.67L25.67,3.64,23.11,14.34a1.26,1.26,0,0,1-.32.67,1,1,0,0,1-.67.17Zm21.36.44a11.28,11.28,0,0,1-2.56-.29,7.44,7.44,0,0,1-1.92-.67,1,1,0,0,1-.61-.93v-.84q0-.52.38-.52a.9.9,0,0,1,.31.06l.42.17a8.77,8.77,0,0,0,1.83.58,9.78,9.78,0,0,0,2,.2,4.48,4.48,0,0,0,2.43-.55,1.76,1.76,0,0,0,.86-1.57,1.61,1.61,0,0,0-.45-1.16A4.29,4.29,0,0,0,43,9.22l-2.41-.76A5.15,5.15,0,0,1,38,6.78a3.94,3.94,0,0,1-.83-2.41,3.7,3.7,0,0,1,.45-1.85,4.47,4.47,0,0,1,1.19-1.37A5.27,5.27,0,0,1,40.51.29,7.4,7.4,0,0,1,42.6,0a8.87,8.87,0,0,1,1.12.07q.57.07,1.08.19t.95.26a4.27,4.27,0,0,1,.7.29,1.59,1.59,0,0,1,.49.41.94.94,0,0,1,.15.55v.79q0,.52-.38.52a1.76,1.76,0,0,1-.64-.2,7.74,7.74,0,0,0-3.2-.64,4.37,4.37,0,0,0-2.21.47,1.6,1.6,0,0,0-.79,1.48,1.58,1.58,0,0,0,.49,1.18,4.94,4.94,0,0,0,1.83.92L44.55,7a5.08,5.08,0,0,1,2.57,1.6A3.76,3.76,0,0,1,47.9,11a4.21,4.21,0,0,1-.44,1.93,4.4,4.4,0,0,1-1.21,1.47,5.43,5.43,0,0,1-1.85.93A8.25,8.25,0,0,1,42.05,15.62Z"></path><path class="cls-2" d="M45.19,23.81C39.72,27.85,31.78,30,25,30A36.64,36.64,0,0,1,.22,20.57c-.51-.46-.06-1.09.56-.74A49.78,49.78,0,0,0,25.53,26.4,49.23,49.23,0,0,0,44.4,22.53C45.32,22.14,46.1,23.14,45.19,23.81Z"></path><path class="cls-2" d="M47.47,21.21c-.7-.9-4.63-.42-6.39-.21-.53.06-.62-.4-.14-.74,3.13-2.2,8.27-1.57,8.86-.83s-.16,5.89-3.09,8.35c-.45.38-.88.18-.68-.32C46.69,25.8,48.17,22.11,47.47,21.21Z"></path></svg>
+
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/js/lunr.min.js?1631799169"></script>
+<script type="text/javascript" src="/js/auto-complete.js?1631799169"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/vi";
+    
+</script>
+<script type="text/javascript" src="/js/search.js?1631799169"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/1-prerequisite/" title="Các bước chuẩn bị" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/1-prerequisite/">
+          <b>1. </b>Các bước chuẩn bị
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/1-prerequisite/1-security-group/" title="Tạo Security Group" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/1-prerequisite/1-security-group/">
+          <b>1.1 </b>Tạo Security Group
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/1-prerequisite/2-database/" title="Tạo ShareNote Database" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/1-prerequisite/2-database/">
+          <b>1.2 </b>Tạo ShareNote Database
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/1-prerequisite/3-deploy-sharenote/" title="Triển khai Máy ảo ShareNote" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/1-prerequisite/3-deploy-sharenote/">
+          <b>1.3 </b>Triển khai Máy ảo ShareNote
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/1-prerequisite/3-deploy-sharenote/1.3.1-createec2/" title="Tạo máy ảo EC2 Ubuntu" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/1-prerequisite/3-deploy-sharenote/1.3.1-createec2/">
+          <b>1.3.1 </b>Tạo máy ảo EC2 Ubuntu
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/1-prerequisite/3-deploy-sharenote/1.3.2-configure-db-sharenote/" title="Thiết lập cấu hình Database cho ShareNote" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/1-prerequisite/3-deploy-sharenote/1.3.2-configure-db-sharenote/">
+          <b>1.3.2 </b>Thiết lập cấu hình Database cho ShareNote
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/1-prerequisite/3-deploy-sharenote/1.3.3-autostart/" title="Thiết lập khởi chạy ứng dụng khi khởi chạy instance" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/1-prerequisite/3-deploy-sharenote/1.3.3-autostart/">
+          <b>1.3.3 </b>Thiết lập khởi chạy ứng dụng khi khởi chạy instance
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/1-prerequisite/4-create-ami/" title="Khởi tạo AMI từ Máy ảo" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/1-prerequisite/4-create-ami/">
+          <b>1.4 </b>Khởi tạo AMI từ Máy ảo
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/2-launch-template/" title="Khởi tạo Launch Template" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/2-launch-template/">
+          <b>2. </b>Khởi tạo Launch Template
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/3-target-group/" title="Khởi tạo Target Group" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/3-target-group/">
+          <b>3. </b>Khởi tạo Target Group
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/5-load-balance/" title="Khởi tạo Load Balancer" class="dd-item 
+        
+        active
+        
+        ">
+      <a href="/vi/5-load-balance/">
+          <b>4. </b>Khởi tạo Load Balancer
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/4-asg/" title="Khởi tạo Auto Scaling Group" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/4-asg/">
+          <b>5. </b>Khởi tạo Auto Scaling Group
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/6-testing/" title="Kiểm tra Kết quả" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/6-testing/">
+          <b>6. </b>Kiểm tra Kết quả
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/vi/7-clean-up/" title="Dọn dẹp tài nguyên" class="dd-item 
+        
+        
+        
+        ">
+      <a href="/vi/7-clean-up/">
+          <b>7. </b>Dọn dẹp tài nguyên
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+      <section id="shortcuts">
+        <h3>More</h3>
+        <ul>
+          
+              <li> 
+                  <a class="padding" href="http://awsstudygroup.com"><i class='fab fa-aws'></i> AWS Study Group - Blog</a>
+              </li>
+          
+              <li> 
+                  <a class="padding" href="https://www.facebook.com/groups/660548818043427/"><i class='fab fa-facebook'></i> AWS Study Group - Nhóm FB</a>
+              </li>
+          
+        </ul>
+      </section>
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fas fa-language fa-fw"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+                      <option id="en" value="/5-load-balance/">English</option>
+                    
+                  
+              
+                  
+              
+          
+              
+              
+                  
+              
+                  
+                    
+                    
+                      <option id="vi" value="/vi/5-load-balance/" selected>Tiếng Việt</option>
+                    
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+      
+      
+      
+        <li><a class="padding" href="#" data-clear-history-toggle=""><i class="fas fa-history fa-fw"></i> Clear History</a></li>
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <left>
+    
+     <b> Workshop</b> <br>
+    <img src="https://hitwebcounter.com/counter/counter.php?page=7831210&style=0038&nbdigits=9&type=page&initCount=0" title="Migrate" Alt="web counter"   border="0" /></a>  <br>
+     <b> <a href="https://cloudjourney.awsstudygroup.com/">Cloud Journey</a></b> <br>
+    <img src="https://hitwebcounter.com/counter/counter.php?page=7830807&style=0038&nbdigits=9&type=page&initCount=0" title="Total CLoud Journey" Alt="web counter"   border="0"   />
+     
+</left>
+<left>
+    <br>
+    <br>
+        <b> Last Updated </b> <br>
+        <i><font color=orange>03-09-2021</font></i>
+    </left>
+    <left>
+        <br>
+        <br>
+            <b> Team </b> <br>
+           
+            <i>
+                <a href="https://www.linkedin.com/in/jotaguy"  style="color:orange">Gia Hưng</a>
+        </i>
+        </left>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            <a href='/vi/'>Triển khai Ứng dụng ShareNote với Auto Scaling Group</a> > Khởi tạo Load Balancer
+          
+        
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Khởi tạo Load Balancer
+            </h1>
+          
+
+        
+
+
+
+	<p>Ở bước này, chúng ta sẽ triển khai Load Balancer điều phối các request từ người dùng đến các EC2 instance chạy ứng dụng ShareNote của chúng ta.</p>
+<p><strong>Nội dung:</strong></p>
+<ul>
+<li><a href="#t%E1%BA%A1o-load-balancer">Tạo Load Balancer</a></li>
+</ul>
+<h4 id="tạo-load-balancer">Tạo Load Balancer</h4>
+<ol>
+<li>
+<p>Truy cập vào <strong>EC2 Management Console</strong>.</p>
+</li>
+<li>
+<p>Ở thanh điều hướng bên trái, chọn <strong>Load Balancers</strong>.</p>
+</li>
+<li>
+<p>Ở trang danh sách Load Balancer, chọn <strong>Create Load Balancer</strong>.</p>
+</li>
+<li>
+<p>Ở trang <strong>Select load balancer type</strong>, chọn <strong>Create</strong> ở mục <strong>Application Load Balancer</strong>.
+<img src="../../../images/5/5_ALB.png?width=90pc" alt="Application Load Balancer"></p>
+</li>
+<li>
+<p>Ở trang <strong>Step 1: Configure Load Balancer</strong>, thiết lập các thông số như sau:</p>
+<ul>
+<li>Basic Configuration:
+<ul>
+<li>Name: Nhập tên của Load Balancer (VD: <strong>sharenote-lb</strong>)</li>
+<li>Scheme: <strong>internet-facing</strong></li>
+<li>IP address type: <strong>ipv4</strong></li>
+</ul>
+</li>
+<li>Availability Zones:
+<ul>
+<li>Availability Zones: Chọn hai AZ tương tự chúng ta đã chọn ở phần trước (VD: ap-northeast-1a và ap-northeast-1c)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Chọn <strong>Next: Configure Security Settings</strong>
+<img src="../../../images/5/5_step1.png?width=90pc" alt="Elastic Load Balancer"></p>
+</li>
+<li>
+<p>Ở trang <strong>Step 2: Configure Security Settings</strong>, chọn <strong>Next: Configure Security Groups</strong>.</p>
+</li>
+<li>
+<p>Ở trang <strong>Step 3: Configure Security Groups</strong>:</p>
+<ul>
+<li>Assign a security group: Chọn <strong>Select an existing security group</strong>
+<ul>
+<li>Chọn Security Group mà bạn lựa chọn (VD: <strong>sharenote-sg</strong>)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Chọn <strong>Next: Configure Routing</strong>.</p>
+</li>
+<li>
+<p>Ở trang <strong>Step 4: Configure Routing</strong>:</p>
+<ul>
+<li>Target group:
+<ul>
+<li>Target group: Chọn <strong>Existing target group</strong></li>
+<li>Name: Lựa chọn target group mà chúng ta đã tạo ở bước trước đó (VD: <strong>sharenote-tg</strong>) (Khi chỉ có một target group, hệ thống sẽ tự động chọn nó)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Chọn <strong>Next: Register Targets</strong>
+<img src="../../../images/5/5_step4.png?width=90pc" alt="Elastic Load Balancer"></p>
+</li>
+<li>
+<p>Ở trang <strong>Step 5: Register Targets</strong>, chọn <strong>Next: Review</strong>.</p>
+</li>
+<li>
+<p>Chọn <strong>Create</strong>.</p>
+</li>
+<li>
+<p>Trang tạo Load Balancer thành công sẽ hiển thị ra cho bạn. Chọn <strong>Close</strong> để trở về danh sách Load Balancer</p>
+</li>
+</ol>
+<p>Quá trình tạo Load Balancer sẽ mất khoảng 5-10 phút để hoàn thành. Bạn có thể kiểm tra sự thay đổi trạng thái từ <strong>provisioning</strong> sang <strong>active</strong> ở danh sách Load Balancer.</p>
+<p>Hãy ghi chú lại <strong>DNS name</strong> của Load Balancer lại vì đây sẽ là địa chỉ chúng ta dùng để truy cập vào ứng dụng dược triển khai.</p>
+<p><img src="../../../images/5/5_DNSName.png?width=90pc" alt="Elastic Load Balancer"></p>
+<p>Đến đây, chúng ta đã hoàn thành việc triển khai ứng dụng Share Note với Auto Scaling Group và Elastic Load Balancer. Với mô hình này, bạn có thể triển khai ứng dụng của mình với tính sẵn sàng cao, dễ dàng mở rộng và cân bằng tải các yêu cầu từ người dùng.</p>
+<p>Ở bước kế tiếp, chúng ta sẽ thử nghiệm việc mở rộng dựa trên tăng số lượng truy cập đến ứng dụng của chúng ta và xem phản hồi của Auto Scaling Group đối với sự gia tăng này.</p>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/vi/3-target-group/" title="Khởi tạo Target Group"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/vi/4-asg/" title="Khởi tạo Auto Scaling Group" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/js/clipboard.min.js?1631799169"></script>
+    <script src="/js/perfect-scrollbar.min.js?1631799169"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1631799169"></script>
+    <script src="/js/jquery.sticky.js?1631799169"></script>
+    <script src="/js/featherlight.min.js?1631799169"></script>
+    <script src="/js/highlight.pack.js?1631799169"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/js/modernizr.custom-3.6.0.js?1631799169"></script>
+    <script src="/js/learn.js?1631799169"></script>
+    <script src="/js/hugo-learn.js?1631799169"></script>
+
+    <link href="/mermaid/mermaid.css?1631799169" rel="stylesheet" />
+    <script src="/mermaid/mermaid.js?1631799169"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-158079754-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>

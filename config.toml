@@ -1,0 +1,70 @@
+# Change the default theme to be use when building the site with Hugo
+theme = "hugo-theme-learn"
+
+# For search functionality
+[outputs]
+home = [ "HTML", "RSS", "JSON"]
+
+[params]
+  # Change default color scheme with a variant one. Can be "red", "blue", "green".
+  themeVariant = "workshop"
+  # Hide Next and Previous page buttons normally displayed full height beside content
+  disableNextPrev = true
+  # Order sections in menu by "weight" or "title". Default to "weight"
+  ordersectionsby = "weight"
+  # Change default color scheme with a variant one. Can be "red", "blue", "green".
+  custom_css = ["css/custom.css"]
+  # Git hub repo link
+  editURL = ""
+  description = "Generative AI Solutions Workshop"
+  showVisitedLinks = true
+  disableBreadcrumb = false
+  
+  # Author information
+  [params.author]
+    name = "Danh Hoang Hieu Nghi"
+    email = ""
+    facebook = "https://www.facebook.com/danhhoanghieunghi69/"
+  
+  # Site information
+  [params.info]
+    description = "Generative AI Solutions Workshop"
+    author = "Danh Hoang Hieu Nghi"
+    github = ""
+    date = "Last Updated: 2024-02-01"
+
+[Languages]
+[Languages.en]
+title = "Generative AI Solutions"
+weight = 1
+languageName = "English"
+
+[[Languages.en.menu.shortcuts]]
+name = "<i class='fab fa-aws'></i> AWS Study Group - Blog"
+identifier = "AWS Study Group"
+url = "http://awsstudygroup.com"
+weight = 20
+
+[[Languages.en.menu.shortcuts]]
+name = "<i class='fab fa-facebook'></i> AWS Study Group - FB Group"
+identifier = "AWS Study Group FB"
+url = "https://www.facebook.com/groups/660548818043427/"
+weight = 20
+
+[Languages.vi]
+title = "Giải pháp Generative AI"
+weight = 2
+languageName = "Tiếng Việt"
+
+[[Languages.vi.menu.shortcuts]]
+name = "<i class='fab fa-aws'></i> AWS Study Group - Blog"
+identifier = "AWS Study Group"
+url = "http://awsstudygroup.com"
+weight = 20
+
+[[Languages.vi.menu.shortcuts]]
+name = "<i class='fab fa-facebook'></i> AWS Study Group - Nhóm FB"
+identifier = "AWS Study Group FB"
+url = "https://www.facebook.com/groups/660548818043427/"
+weight = 20
+
